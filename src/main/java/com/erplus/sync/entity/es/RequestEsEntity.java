@@ -39,6 +39,8 @@ public class RequestEsEntity {
 
     private SummaryField summary_field;
 
+    private SearchField search_field;
+
     @JSONField(serialize = false, deserialize = false)
     private Integer default_type;
 

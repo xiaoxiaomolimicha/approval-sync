@@ -8,7 +8,6 @@ import com.erplus.sync.entity.es.GroupComponentEsEntity;
 import com.erplus.sync.entity.es.GroupNestedComponent;
 import com.erplus.sync.utils.ComponentUtils;
 import com.erplus.sync.utils.SQLLogger;
-import com.erplus.sync.utils.Utils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -63,16 +62,10 @@ public class ComponentImpl extends AbstractDao implements ComponentDao {
                     componentEs.setUnique_id(rs.getInt(4));
                     String formatValue = ComponentUtils.formatEsComponentValue(value, type);
                     String dateValue = ComponentUtils.getDateValue(value, type);
-                    if (StringUtils.isNotBlank(dateValue)) {
-                        logger.info("dateValue:{}", dateValue);
-                    }
                     Float floatValue = ComponentUtils.getFloatValue(value, type);
-                    if (Utils.isNotNull(floatValue)) {
-                        logger.info("floatValue:{}", floatValue);
-                    }
                     componentEs.setValue(formatValue);
-                    componentEs.setDateValue(dateValue);
-                    componentEs.setFloatValue(floatValue);
+                    componentEs.setDate_value(dateValue);
+                    componentEs.setFloat_value(floatValue);
                     componentEs.setCreate_time(getTimeStr(rs.getTimestamp(6)));
                     componentEs.setType(type);
                     map.putIfAbsent(componentEs.getRequest_id(), new ArrayList<>());
@@ -119,10 +112,10 @@ public class ComponentImpl extends AbstractDao implements ComponentDao {
                             Float floatValue = ComponentUtils.getFloatValue(componentValue, type);
                             groupNestedComponent.setValue(formatValue);
                             if (dateValue != null) {
-                                groupNestedComponent.setDateValue(dateValue);
+                                groupNestedComponent.setDate_value(dateValue);
                             }
                             if (floatValue != null) {
-                                groupNestedComponent.setFloatValue(floatValue);
+                                groupNestedComponent.setFloat_value(floatValue);
                             }
                             needSyncGroupNestedComponents.add(groupNestedComponent);
                         }

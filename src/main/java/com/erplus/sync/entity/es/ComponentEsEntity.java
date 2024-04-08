@@ -16,9 +16,9 @@ public class ComponentEsEntity {
 
     private String value;
 
-    private String dateValue;
+    private String date_value;
 
-    private Float floatValue;
+    private Float float_value;
 
 
     private Integer type;

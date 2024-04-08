@@ -166,6 +166,7 @@ public class ComponentUtils {
                     return null;
             }
         } catch (Exception e) {
+            logger.error("errorDate:{}", value);
             logger.error(e.getMessage(), e);
             return null;
         }
@@ -176,6 +177,7 @@ public class ComponentUtils {
             BigDecimal decimal = new BigDecimal(value);
             return decimal.stripTrailingZeros().floatValue();
         } catch (Exception e) {
+            logger.error("errorNum:{}", value);
             logger.error(e.getMessage(), e);
             return null;
         }
