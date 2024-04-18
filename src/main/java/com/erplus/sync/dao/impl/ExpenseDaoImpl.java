@@ -58,7 +58,7 @@ public class ExpenseDaoImpl extends AbstractDao implements ExpenseDao {
                     expenseEsEntity.setRequest_id(rs.getInt(1));
                     expenseEsEntity.setId(rs.getInt(2));
                     expenseEsEntity.setPay_amount(rs.getBigDecimal(3).stripTrailingZeros().toPlainString());
-                    expenseEsEntity.setTotal_amount(rs.getBigDecimal(4).stripTrailingZeros().floatValue());
+                    expenseEsEntity.setTotal_amount(rs.getBigDecimal(4).stripTrailingZeros().toPlainString());
                     expenseEsEntity.setPay_date(getTimeStr(rs.getTimestamp(5), DateTimeHelper.YEAR_MONTH_DAY_PATTERN));
                     map.putIfAbsent(expenseEsEntity.getRequest_id(), new ArrayList<>());
                     map.get(expenseEsEntity.getRequest_id()).add(expenseEsEntity);

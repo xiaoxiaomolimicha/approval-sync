@@ -7,17 +7,15 @@ import com.erplus.sync.dao.impl.RequestDaoImpl;
 import com.erplus.sync.entity.RequestFiled;
 import com.erplus.sync.entity.RequestFlow;
 import com.erplus.sync.utils.JschSessionUtils;
-import com.erplus.sync.utils.ListHelper;
 import com.erplus.sync.utils.MysqlConnectionUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 
 import java.io.*;
-import java.nio.charset.StandardCharsets;
+
 import java.nio.file.Files;
 import java.sql.Connection;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @Slf4j
 public class GetOneCompanyData {

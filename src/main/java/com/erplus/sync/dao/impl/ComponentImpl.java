@@ -35,7 +35,7 @@ public class ComponentImpl extends AbstractDao implements ComponentDao {
 
     @Override
     public Map<Integer, List<ComponentEsEntity>> selectOneCompanyAllComponent(Integer companyId) throws SQLException {
-        String sql = "select rc.Frequest_id, rc.Fid, rc.Fcomponent_num, rc.Funique_id, rc.Fcontent, rc.Fcreate_time, rc.Fcontent_type " +
+        String sql = "select rc.Frequest_id, rc.Fid, rc.Fcomponent_num, rc.Funique_id, rc.Fcontent, rc.Fcontent_type " +
                 "from request_flow rf " +
                 "inner join request_content rc " +
                 "on rf.Frequest_id = rc.Frequest_id " +
@@ -46,7 +46,7 @@ public class ComponentImpl extends AbstractDao implements ComponentDao {
             logger.info(SQLLogger.logSQL(sql, companyId));
             try (ResultSet rs = ps.executeQuery()){
                 while (rs.next()) {
-                    int type = rs.getInt(7);
+                    int type = rs.getInt(6);
                     int num = rs.getInt(3);
                     String value = rs.getString(5);
                     //不需要上传到es的组件
@@ -62,11 +62,10 @@ public class ComponentImpl extends AbstractDao implements ComponentDao {
                     componentEs.setUnique_id(rs.getInt(4));
                     String formatValue = ComponentUtils.formatEsComponentValue(value, type);
                     String dateValue = ComponentUtils.getDateValue(value, type);
-                    Float floatValue = ComponentUtils.getFloatValue(value, type);
+                    String floatValue = ComponentUtils.getFloatValue(value, type);
                     componentEs.setValue(formatValue);
                     componentEs.setDate_value(dateValue);
                     componentEs.setFloat_value(floatValue);
-                    componentEs.setCreate_time(getTimeStr(rs.getTimestamp(6)));
                     componentEs.setType(type);
                     map.putIfAbsent(componentEs.getRequest_id(), new ArrayList<>());
                     map.get(componentEs.getRequest_id()).add(componentEs);
@@ -78,7 +77,7 @@ public class ComponentImpl extends AbstractDao implements ComponentDao {
 
     @Override
     public Map<Integer, List<GroupComponentEsEntity>> selectOneCompanyAllGroupComponent(Integer companyId) throws SQLException {
-        String sql = "select acg.id, acg.request_id, acg.component_group_id, create_time, acg.value " +
+        String sql = "select acg.id, acg.request_id, acg.component_group_id, acg.value " +
                 "from request_flow rf " +
                 "inner join sys_approval_component_group_value acg " +
                 "on rf.Frequest_id = acg.request_id " +
@@ -93,8 +92,7 @@ public class ComponentImpl extends AbstractDao implements ComponentDao {
                     groupComponentEs.setId(rs.getInt(1));
                     groupComponentEs.setRequest_id(rs.getInt(2));
                     groupComponentEs.setComponent_group_id(rs.getInt(3));
-                    groupComponentEs.setCreate_time(getTimeStr(rs.getTimestamp(4)));
-                    String value = rs.getString(5);
+                    String value = rs.getString(4);
                     if (StringUtils.isBlank(value)) {
                         groupComponentEs.setComponent(new ArrayList<>());
                     } else {
@@ -109,7 +107,7 @@ public class ComponentImpl extends AbstractDao implements ComponentDao {
                             }
                             String formatValue = ComponentUtils.formatEsComponentValue(componentValue, type);
                             String dateValue = ComponentUtils.getDateValue(componentValue, type);
-                            Float floatValue = ComponentUtils.getFloatValue(componentValue, type);
+                            String floatValue = ComponentUtils.getFloatValue(componentValue, type);
                             groupNestedComponent.setValue(formatValue);
                             if (dateValue != null) {
                                 groupNestedComponent.setDate_value(dateValue);

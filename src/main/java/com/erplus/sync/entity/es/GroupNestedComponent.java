@@ -15,7 +15,7 @@ public class GroupNestedComponent {
 
     private String value;
 
-    private Float float_value;
+    private String float_value;
 
     private String date_value;
 

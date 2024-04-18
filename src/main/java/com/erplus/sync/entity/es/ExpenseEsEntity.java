@@ -14,7 +14,7 @@ public class ExpenseEsEntity {
     private String pay_amount;
 
     @JSONField(serialize = false, deserialize = false)
-    private Float total_amount;
+    private String total_amount;
 
     private String pay_date;
 

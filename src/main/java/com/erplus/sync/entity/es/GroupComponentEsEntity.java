@@ -16,7 +16,5 @@ public class GroupComponentEsEntity {
 
     private Integer component_group_id;
 
-    private String create_time;
-
     private List<GroupNestedComponent> component;
 }

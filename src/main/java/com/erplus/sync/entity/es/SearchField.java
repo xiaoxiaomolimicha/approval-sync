@@ -4,7 +4,7 @@ import lombok.Data;
 
 @Data
 public class SearchField {
-    private Float total_amount;
+    private String total_amount;
 
     private Integer total_duration;
 }

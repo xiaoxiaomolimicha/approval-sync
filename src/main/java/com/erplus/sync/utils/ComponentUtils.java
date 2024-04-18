@@ -4,12 +4,12 @@ import com.alibaba.fastjson.JSONObject;
 import com.erplus.sync.entity.Constants;
 import com.erplus.sync.entity.ContentType;
 import com.erplus.sync.entity.es.ComponentEsEntity;
-import com.sun.media.sound.RIFFReader;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.*;
 
 public class ComponentUtils {
@@ -148,7 +148,7 @@ public class ComponentUtils {
         }
     }
 
-    public static Float getFloatValue(String value, Integer type) {
+    public static String getFloatValue(String value, Integer type) {
         if (StringUtils.isBlank(value)) {
             return null;
         }
@@ -172,10 +172,10 @@ public class ComponentUtils {
         }
     }
 
-    public static Float parseFloatValue(String value) {
+    public static String parseFloatValue(String value) {
         try {
             BigDecimal decimal = new BigDecimal(value);
-            return decimal.stripTrailingZeros().floatValue();
+            return decimal.setScale(6, RoundingMode.HALF_UP).stripTrailingZeros().toPlainString(); //只保留6位小数，四舍五入
         } catch (Exception e) {
             logger.error("errorNum:{}", value);
             logger.error(e.getMessage(), e);

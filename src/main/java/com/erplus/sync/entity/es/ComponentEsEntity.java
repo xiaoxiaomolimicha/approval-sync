@@ -18,13 +18,11 @@ public class ComponentEsEntity {
 
     private String date_value;
 
-    private Float float_value;
+    private String float_value;
 
 
     private Integer type;
 
     private Integer unique_id;
-
-    private String create_time;
 
 }

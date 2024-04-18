@@ -21,4 +21,9 @@ public class ListHelper {
         }
         return result;
     }
+
+    public static <T> String list2string(List<T> list) {
+        String str = list.toString().substring(1, list.toString().length() - 1);
+        return str.replaceAll(" ", "");
+    }
 }
