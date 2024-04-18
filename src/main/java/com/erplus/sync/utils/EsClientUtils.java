@@ -53,4 +53,15 @@ public class EsClientUtils {
         }
 
     }
+
+    public static RestHighLevelClient getLocalEsClient() {
+        CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
+        credentialsProvider.setCredentials(AuthScope.ANY, new UsernamePasswordCredentials("elastic", "woslabeosw146867"));
+
+        return new RestHighLevelClient(RestClient.builder(
+                        new HttpHost("127.0.0.1", 9200, "http"))
+                .setHttpClientConfigCallback(f -> f.setDefaultCredentialsProvider(credentialsProvider))
+                .setRequestConfigCallback(requestConfigBuilder -> requestConfigBuilder.setConnectTimeout(1000)
+                        .setSocketTimeout(4000)));
+    }
 }

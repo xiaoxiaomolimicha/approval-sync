@@ -69,14 +69,15 @@ public class TemplateDaoImpl extends AbstractDao implements TemplateDao {
         String sql = "update request_template set Fstatus = 2 where Fcompany_id = ? and Ftemplate_id in (" + ListHelper.list2string(templateIds) + ")";
         try (PreparedStatement ps = getPreparedStatement(sql)){
             ps.setInt(1, companyId);
+            logger.info(SQLLogger.logSQL(sql, companyId));
             ps.executeUpdate();
         }
     }
 
     @Override
-    public List<MaxUniqueIdEntity> selectOneTemplateAllComponents(Integer companyId) throws SQLException {
+    public List<MaxUniqueIdEntity> selectOneCompanyAllTemplateComponents(Integer companyId) throws SQLException {
         List<MaxUniqueIdEntity> result = new ArrayList<>();
-        String sql = "select Ftemplate_id, Fancestor_id, Ftemplate_component from request_template where Fcompany_id = ?";
+        String sql = "select Ftemplate_id, Fancestor_id, Ftemplate_component, Fmax_unique_id from request_template where Fcompany_id = ?";
         try (PreparedStatement ps = getPreparedStatement(sql)){
             ps.setInt(1, companyId);
             logger.info(SQLLogger.logSQL(sql, companyId));
@@ -88,10 +89,37 @@ public class TemplateDaoImpl extends AbstractDao implements TemplateDao {
                     String templateComponents = rs.getString(3);
                     maxUniqueIdEntity.setTemplateComponents(templateComponents);
                     maxUniqueIdEntity.setTemplateComponentList(JSONObject.parseArray(templateComponents, TemplateComponent.class));
+                    maxUniqueIdEntity.setMaxUniqueId((Integer) rs.getObject(4));
                     result.add(maxUniqueIdEntity);
                 }
             }
         }
         return result;
+    }
+
+    @Override
+    public List<Integer> selectAllCompanyIdInTemplate() throws SQLException {
+        List<Integer> companyIds = new ArrayList<>();
+        String sql = "select Fcompany_id from request_template where Fcompany_id > 0 group by Fcompany_id";
+        try (PreparedStatement ps = getPreparedStatement(sql)){
+            logger.info(sql);
+            try (ResultSet rs = ps.executeQuery()){
+                while (rs.next()) {
+                    companyIds.add(rs.getInt(1));
+                }
+            }
+        }
+        return companyIds;
+    }
+
+    @Override
+    public void updateMaxUniqueIdByAncestorId(Integer ancestorId, Integer maxUniqueId) throws SQLException {
+        String sql = "update request_template set Fmax_unique_id = ? where Fancestor_id = ?";
+        try (PreparedStatement ps = getPreparedStatement(sql)){
+            ps.setInt(1, maxUniqueId);
+            ps.setInt(2, ancestorId);
+            logger.info(SQLLogger.logSQL(sql, maxUniqueId, ancestorId));
+            ps.executeUpdate();
+        }
     }
 }

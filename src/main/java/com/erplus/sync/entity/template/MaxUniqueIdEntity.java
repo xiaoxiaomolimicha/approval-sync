@@ -13,6 +13,8 @@ public class MaxUniqueIdEntity {
 
     private String templateComponents;
 
+    private Integer maxUniqueId;
+
     private List<TemplateComponent> templateComponentList;
 
 }

@@ -22,10 +22,10 @@ import java.util.List;
 import java.util.Map;
 
 @Slf4j
-public class SyncEsData {
+public class SyncDataToEs {
 
     @Test
-    public void migrationDataToEs() throws Throwable {
+    public void syncDataToEs() throws Throwable {
         Connection connection = MysqlConnectionUtils.getMysqlConnection();
         RestHighLevelClient client = EsClientUtils.getEsClient();
         RequestDaoImpl requestDao = new RequestDaoImpl(connection);

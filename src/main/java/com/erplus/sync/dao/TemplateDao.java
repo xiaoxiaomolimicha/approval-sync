@@ -12,5 +12,10 @@ public interface TemplateDao {
 
     void updateNewStopStatusByTemplateId(List<Integer> templateIds, Integer companyId) throws SQLException;
 
-    List<MaxUniqueIdEntity> selectOneTemplateAllComponents(Integer companyId) throws SQLException;
+    List<MaxUniqueIdEntity> selectOneCompanyAllTemplateComponents(Integer companyId) throws SQLException;
+
+    List<Integer> selectAllCompanyIdInTemplate() throws SQLException;
+
+    void updateMaxUniqueIdByAncestorId(Integer ancestorId, Integer maxUniqueId) throws SQLException;
+
 }
