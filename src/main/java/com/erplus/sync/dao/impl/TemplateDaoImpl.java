@@ -2,9 +2,7 @@ package com.erplus.sync.dao.impl;
 
 import com.alibaba.fastjson.JSONObject;
 import com.erplus.sync.dao.TemplateDao;
-import com.erplus.sync.entity.RequestFlow;
-import com.erplus.sync.entity.es.RequestEsEntity;
-import com.erplus.sync.entity.template.MaxUniqueIdEntity;
+import com.erplus.sync.entity.template.SimpleTemplate;
 import com.erplus.sync.entity.template.TemplateComponent;
 import com.erplus.sync.utils.ListHelper;
 import com.erplus.sync.utils.SQLLogger;
@@ -75,22 +73,22 @@ public class TemplateDaoImpl extends AbstractDao implements TemplateDao {
     }
 
     @Override
-    public List<MaxUniqueIdEntity> selectOneCompanyAllTemplateComponents(Integer companyId) throws SQLException {
-        List<MaxUniqueIdEntity> result = new ArrayList<>();
+    public List<SimpleTemplate> selectOneCompanyAllTemplateComponents(Integer companyId) throws SQLException {
+        List<SimpleTemplate> result = new ArrayList<>();
         String sql = "select Ftemplate_id, Fancestor_id, Ftemplate_component, Fmax_unique_id from request_template where Fcompany_id = ?";
         try (PreparedStatement ps = getPreparedStatement(sql)){
             ps.setInt(1, companyId);
             logger.info(SQLLogger.logSQL(sql, companyId));
             try (ResultSet rs = ps.executeQuery()){
                 while (rs.next()) {
-                    MaxUniqueIdEntity maxUniqueIdEntity = new MaxUniqueIdEntity();
-                    maxUniqueIdEntity.setTemplateId(rs.getInt(1));
-                    maxUniqueIdEntity.setAncestorId(rs.getInt(2));
+                    SimpleTemplate simpleTemplate = new SimpleTemplate();
+                    simpleTemplate.setTemplateId(rs.getInt(1));
+                    simpleTemplate.setAncestorId(rs.getInt(2));
                     String templateComponents = rs.getString(3);
-                    maxUniqueIdEntity.setTemplateComponents(templateComponents);
-                    maxUniqueIdEntity.setTemplateComponentList(JSONObject.parseArray(templateComponents, TemplateComponent.class));
-                    maxUniqueIdEntity.setMaxUniqueId((Integer) rs.getObject(4));
-                    result.add(maxUniqueIdEntity);
+                    simpleTemplate.setTemplateComponents(templateComponents);
+                    simpleTemplate.setTemplateComponentList(JSONObject.parseArray(templateComponents, TemplateComponent.class));
+                    simpleTemplate.setMaxUniqueId((Integer) rs.getObject(4));
+                    result.add(simpleTemplate);
                 }
             }
         }
@@ -119,6 +117,38 @@ public class TemplateDaoImpl extends AbstractDao implements TemplateDao {
             ps.setInt(1, maxUniqueId);
             ps.setInt(2, ancestorId);
             logger.info(SQLLogger.logSQL(sql, maxUniqueId, ancestorId));
+            ps.executeUpdate();
+        }
+    }
+
+    @Override
+    public List<SimpleTemplate> selectAllDefaultTemplate() throws SQLException {
+        List<SimpleTemplate> simpleTemplates = new ArrayList<>();
+        String sql = "select Ftemplate_id, Ftemplate_default_type, Ftemplate_component from request_template where Fcompany_id = 0";
+        try (PreparedStatement ps = getPreparedStatement(sql)){
+            logger.info(SQLLogger.logSQL(sql));
+            try (ResultSet rs = ps.executeQuery()){
+                while (rs.next()) {
+                    SimpleTemplate simpleTemplate = new SimpleTemplate();
+                    simpleTemplate.setTemplateId(rs.getInt(1));
+                    simpleTemplate.setDefaultType(rs.getInt(2));
+                    String templateComponents = rs.getString(3);
+                    simpleTemplate.setTemplateComponents(templateComponents);
+                    simpleTemplate.setTemplateComponentList(JSONObject.parseArray(templateComponents, TemplateComponent.class));
+                    simpleTemplates.add(simpleTemplate);
+                }
+            }
+        }
+        return simpleTemplates;
+    }
+
+    @Override
+    public void updateDefaultTemplateComponents(Integer templateId, String templateComponents) throws SQLException {
+        String sql = "update request_template set Ftemplate_component = ? where Ftemplate_id = ?";
+        try (PreparedStatement ps = getPreparedStatement(sql)){
+            ps.setString(1, templateComponents);
+            ps.setInt(2, templateId);
+            logger.info(SQLLogger.logSQL(sql, templateComponents, templateId));
             ps.executeUpdate();
         }
     }

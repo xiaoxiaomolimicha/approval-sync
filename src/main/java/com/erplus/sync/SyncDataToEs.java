@@ -38,7 +38,7 @@ public class SyncDataToEs {
         OutdoorDao outdoorDao = new OutdoorDaoImpl(connection);
         LeaveDao leaveDao = new LeaveDaoImpl(connection);
         OvertimeDao overtimeDao = new OvertimeDaoImpl(connection);
-        List<Integer> companyIds = Arrays.asList(7949,9030,9082,9285,9571,9684);
+        List<Integer> companyIds = Arrays.asList(9500,9491,9453,9444,9423,9396,9380,9371,9361,9359,9358,9316,9315,9309,9308,9302,9247,9214,9182,9179,9167,9161,9151,9145,9144,9112,9090,9056,9035,9017);
         log.info("需要迁移数据到es公司的数量:{}", companyIds.size());
         try {
             for (Integer companyId : companyIds) {

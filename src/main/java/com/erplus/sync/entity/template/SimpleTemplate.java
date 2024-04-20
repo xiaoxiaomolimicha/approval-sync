@@ -5,7 +5,7 @@ import lombok.Data;
 import java.util.List;
 
 @Data
-public class MaxUniqueIdEntity {
+public class SimpleTemplate {
 
     private Integer templateId;
 
@@ -14,6 +14,8 @@ public class MaxUniqueIdEntity {
     private String templateComponents;
 
     private Integer maxUniqueId;
+
+    private Integer defaultType;
 
     private List<TemplateComponent> templateComponentList;
 

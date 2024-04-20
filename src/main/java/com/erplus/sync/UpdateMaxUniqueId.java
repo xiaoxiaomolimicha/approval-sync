@@ -2,7 +2,7 @@ package com.erplus.sync;
 
 import com.erplus.sync.dao.TemplateDao;
 import com.erplus.sync.dao.impl.TemplateDaoImpl;
-import com.erplus.sync.entity.template.MaxUniqueIdEntity;
+import com.erplus.sync.entity.template.SimpleTemplate;
 import com.erplus.sync.entity.template.TemplateComponent;
 import com.erplus.sync.utils.JschSessionUtils;
 import com.erplus.sync.utils.MysqlConnectionUtils;
@@ -27,23 +27,23 @@ public class UpdateMaxUniqueId {
             log.info("总共需要更新的公司size:{}", companyIds.size());
             for (Integer companyId : companyIds) {
                 log.info("正在查询companyId:{}公司所有的模板组件", companyId);
-                List<MaxUniqueIdEntity> maxUniqueIdEntities = templateDao.selectOneCompanyAllTemplateComponents(companyId);
+                List<SimpleTemplate> maxUniqueIdEntities = templateDao.selectOneCompanyAllTemplateComponents(companyId);
                 if (Utils.isEmpty(maxUniqueIdEntities)) {
                     log.error("该公司没有任何审批模板信息！！！");
                     continue;
                 }
-                Map<Integer, List<MaxUniqueIdEntity>> ancestorIdMap = maxUniqueIdEntities.stream().collect(Collectors.groupingBy(MaxUniqueIdEntity::getAncestorId));
+                Map<Integer, List<SimpleTemplate>> ancestorIdMap = maxUniqueIdEntities.stream().collect(Collectors.groupingBy(SimpleTemplate::getAncestorId));
                 for (Integer ancestorId : ancestorIdMap.keySet()) {
-                    List<MaxUniqueIdEntity> sameAncestorIdEntities = ancestorIdMap.get(ancestorId);
+                    List<SimpleTemplate> sameAncestorIdEntities = ancestorIdMap.get(ancestorId);
                     int maxUniqueId = 0;
-                    for (MaxUniqueIdEntity maxUniqueIdEntity : sameAncestorIdEntities) {
-                        int templateMaxUniqueId = Utils.isNull(maxUniqueIdEntity.getMaxUniqueId()) ? 0 : maxUniqueIdEntity.getMaxUniqueId();
+                    for (SimpleTemplate simpleTemplate : sameAncestorIdEntities) {
+                        int templateMaxUniqueId = Utils.isNull(simpleTemplate.getMaxUniqueId()) ? 0 : simpleTemplate.getMaxUniqueId();
                         if (templateMaxUniqueId > maxUniqueId) {
                             maxUniqueId = templateMaxUniqueId;
                         }
-                        List<TemplateComponent> templateComponentList = maxUniqueIdEntity.getTemplateComponentList();
+                        List<TemplateComponent> templateComponentList = simpleTemplate.getTemplateComponentList();
                         if (Utils.isEmpty(templateComponentList)) {
-                            log.error("当前模板templateId:{}没有组件！！！", maxUniqueIdEntity.getTemplateId());
+                            log.error("当前模板templateId:{}没有组件！！！", simpleTemplate.getTemplateId());
                             continue;
                         }
                         for (TemplateComponent templateComponent : templateComponentList) {

@@ -1,6 +1,6 @@
 package com.erplus.sync.dao;
 
-import com.erplus.sync.entity.template.MaxUniqueIdEntity;
+import com.erplus.sync.entity.template.SimpleTemplate;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -12,10 +12,13 @@ public interface TemplateDao {
 
     void updateNewStopStatusByTemplateId(List<Integer> templateIds, Integer companyId) throws SQLException;
 
-    List<MaxUniqueIdEntity> selectOneCompanyAllTemplateComponents(Integer companyId) throws SQLException;
+    List<SimpleTemplate> selectOneCompanyAllTemplateComponents(Integer companyId) throws SQLException;
 
     List<Integer> selectAllCompanyIdInTemplate() throws SQLException;
 
     void updateMaxUniqueIdByAncestorId(Integer ancestorId, Integer maxUniqueId) throws SQLException;
 
+    List<SimpleTemplate> selectAllDefaultTemplate() throws SQLException;
+
+    void updateDefaultTemplateComponents(Integer templateId, String templateComponents) throws SQLException;
 }
