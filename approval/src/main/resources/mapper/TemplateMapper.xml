@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.erplus.sync.mapper.TemplateMapper">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.erplus.sync.entity.template.SimpleTemplate" id="templateMap">
+        <id property="templateId" column="FtemplateId"/>
+        <result property="ancestorId" column="Fancestor_id"/>
+        <result property="templateComponents" column="Ftemplate_component"/>
+        <result property="maxUniqueId" column="Fmax_unique_id"/>
+        <result property="defaultType" column="Fdefault_type"/>
+        <result property="companyId" column="Fcompany_id"/>
+    </resultMap>
+
+</mapper>

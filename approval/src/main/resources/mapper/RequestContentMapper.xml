@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.erplus.sync.mapper.RequestContentMapper">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.erplus.sync.entity.RequestContent" id="requestContentMap">
+        <id property="id" column="Fid"/>
+        <result property="templateId" column="Ftemplate_id"/>
+        <result property="companyId" column="Fcompany_id"/>
+        <result property="componentNum" column="Fcomponent_num"/>
+        <result property="content" column="Fcontent"/>
+        <result property="requestId" column="Frequest_id"/>
+        <result property="createTime" column="Fcreate_time"/>
+        <result property="contentType" column="Fcontent_type"/>
+        <result property="sort" column="Fsort"/>
+        <result property="uniqueId" column="Funique_id"/>
+        <result property="ledgerFlowTypeId" column="Fledger_flow_type_id"/>
+    </resultMap>
+
+    <select id="selectSingleTimeRangeContent" resultMap="requestContentMap">
+        select * from request_content where Frequest_id in (select Frequest_id from request_content where Fcontent_type = 17 group by Frequest_id having count(Frequest_id) % 2 != 0 order by Frequest_id desc);
+    </select>
+
+
+</mapper>

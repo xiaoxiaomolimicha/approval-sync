@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.erplus.sync.mapper.RequestFlowMapper">
+
+    <resultMap type="com.erplus.sync.entity.RequestFlow" id="requestFlowMap">
+        <id property="requestId" column="Frequest_id"/>
+        <result property="requestName" column="Frequest_name"/>
+        <result property="templateId" column="Frequest_templet"/>
+        <result property="requestStep" column="Frequest_step"/>
+        <result property="companyId" column="Fcompany_id"/>
+        <result property="applicant" column="Fapplicant"/>
+        <result property="applicantCiid" column="Fapplicant_ciid"/>
+        <result property="createTime" column="Fcreate_time"/>
+        <result property="createTimeStr" column="Fcreate_time"/>
+        <result property="checkedTime" column="Fchecked_time"/>
+        <result property="checkedTimeStr" column="Fchecked_time"/>
+        <result property="callBackTime" column="Fcall_back_time"/>
+        <result property="callBackTimeStr" column="Fcall_back_time"/>
+        <result property="disableTime" column="Fdisable_time"/>
+        <result property="disableTimeStr" column="Fdisable_time"/>
+        <result property="operatorId" column="Foperator_id"/>
+        <result property="allJudger" column="Fall_judger"/>
+        <result property="allJudgerCiid" column="Fall_judger_ciid"/>
+        <result property="whoConfirm" column="Fwho_confirm"/>
+        <result property="whoConfirmCiid" column="Fwho_confirm_ciid"/>
+        <result property="whoTheNext" column="Fwho_the_next"/>
+        <result property="whoTheNextCiid" column="Fwho_the_next_ciid"/>
+        <result property="whoRefused" column="Fwho_refused"/>
+        <result property="whoRefusedCiid" column="Fwho_refused_ciid"/>
+        <result property="contentIds" column="Fcontent_ids"/>
+        <result property="contentNums" column="Fcontent_nums"/>
+        <result property="cc" column="Fcc"/>
+        <result property="ccCiid" column="Fcc_ciid"/>
+        <result property="finished" column="Ffinished"/>
+        <result property="version" column="Fversion"/>
+        <result property="outerPosition" column="Fouter_position"/>
+        <result property="isResubmit" column="Fis_resubmit"/>
+        <result property="refuseChain" column="Frefuse_chain"/>
+        <result property="requestTemplateType" column="Frequest_template_type"/>
+        <result property="relaPeople" column="Frela_people"/>
+        <result property="relaPeopleCiid" column="Frela_people_ciid"/>
+        <result property="manualEndingTime" column="Fmanual_ending_time"/>
+        <result property="manualEndingTimeStr" column="Fmanual_ending_time"/>
+        <result property="requestContentLast" column="Frequest_content_last"/>
+        <result property="finallyConfirmedTime" column="Ffinally_confirmed_time"/>
+        <result property="finallyConfirmedTimeStr" column="Ffinally_confirmed_time"/>
+        <result property="finallyCcTime" column="Ffinally_cc_time"/>
+        <result property="finallyCcTimeStr" column="Ffinally_cc_time"/>
+        <result property="requestAncestorId" column="Frequest_ancestor_id"/>
+        <result property="requestContentLastTotalSecond" column="Frequest_content_last_total_second"/>
+        <result property="naturalContentTimeLast" column="Fnatural_content_time_last"/>
+        <result property="isAnnualLeave" column="Fis_annual_leave"/>
+        <result property="latestApprovedTime" column="Flatest_approved_time"/>
+        <result property="latestApprovedTimeStr" column="Flatest_approved_time"/>
+        <result property="approvalNum" column="Fapproval_num"/>
+        <result property="totalMoney" column="Ftotal_money"/>
+        <result property="generation" column="Fgeneration"/>
+        <result property="contactSubmitTime" column="Fcontact_submit_time"/>
+        <result property="state" column="Fstate"/>
+        <result property="proxyContactId" column="Fproxy_contact_id"/>
+        <result property="versionInfo" column="Fversion_info"/>
+        <result property="financialStatus" column="Ffinancial_status"/>
+        <result property="invoiceStatus" column="Finvoice_status"/>
+        <result property="templateAncestorId" column="Ftemplate_ancestor_id"/>
+        <result property="printCount" column="Fprint_count"/>
+    </resultMap>
+
+    <!-- 其他 SQL 语句 -->
+</mapper>
