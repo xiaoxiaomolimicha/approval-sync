@@ -1,12 +1,13 @@
 package com.erplus.sync.entity;
 
-import com.erplus.sync.utils.JschSessionUtils;
 import com.erplus.sync.utils.MysqlConnectionUtils;
 import com.erplus.sync.utils.PropertiesSingleton;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Properties;
 
+@Getter
 @Slf4j
 public class DatabaseSingleton {
     private final String host;
@@ -44,30 +45,6 @@ public class DatabaseSingleton {
             }
         }
         return databaseSingleton;
-    }
-
-    public String getHost() {
-        return host;
-    }
-
-    public int getPort() {
-        return port;
-    }
-
-    public String getProtocol() {
-        return protocol;
-    }
-
-    public String getDatabase() {
-        return database;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public String getPassword() {
-        return password;
     }
 
     public String getUrl() {

@@ -2,9 +2,11 @@ package com.erplus.sync.utils;
 
 
 import com.erplus.sync.entity.DatabaseSingleton;
+import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
 import lombok.extern.slf4j.Slf4j;
 
+import java.net.BindException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -21,6 +23,7 @@ public class ForwardPortUtils {
             Session jschSession = JschSessionUtils.getJschSession();
             jschSession.setPortForwardingL(MysqlConnectionUtils.MYSQL_LOCAL_PORT, databaseSingleton.getHost(), databaseSingleton.getPort());
             localPorts.add(MysqlConnectionUtils.MYSQL_LOCAL_PORT);
+        } catch (JSchException ignored) {
         } catch (Throwable e) {
             log.error(e.getMessage(), e);
         }

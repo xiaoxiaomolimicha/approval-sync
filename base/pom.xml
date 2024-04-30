@@ -17,16 +17,34 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <lombok.version>1.18.0</lombok.version>
         <log4j2.version>2.17.1</log4j2.version>
+        <jul-to-slf4j.version>1.7.33</jul-to-slf4j.version>
         <!--        <es.version>7.10.2</es.version>-->
         <es.version>7.17.0</es.version>
         <junit.version>4.12</junit.version>
+        <mybatis-plus.version>3.5.1</mybatis-plus.version>
+        <fastjson.version>1.2.80</fastjson.version>
+        <commons-lang3.version>3.1</commons-lang3.version>
+        <mysql-connector-java.version>8.0.23</mysql-connector-java.version>
+        <jsch.version>0.1.55</jsch.version>
+        <commons-pool2.version>2.4.2</commons-pool2.version>
     </properties>
 
     <dependencies>
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
-            <version>8.0.23</version>
+            <version>${mysql-connector-java.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.baomidou</groupId>
+            <artifactId>mybatis-plus-boot-starter</artifactId>
+            <version>${mybatis-plus.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
 
 <!--        全局排除spring-boot-starter-logging内的所有依赖-->
@@ -74,14 +92,13 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>jul-to-slf4j</artifactId>
-            <version>1.7.33</version>
-            <scope>compile</scope>
+            <version>${jul-to-slf4j.version}</version>
         </dependency>
 
         <dependency>
             <groupId>com.alibaba</groupId>
             <artifactId>fastjson</artifactId>
-            <version>1.2.80</version>
+            <version>${fastjson.version}</version>
         </dependency>
 
         <dependency>
@@ -90,10 +107,17 @@
             <version>${es.version}</version>
         </dependency>
 
+
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-pool2</artifactId>
-            <version>2.4.2</version>
+            <version>${commons-pool2.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>${commons-lang3.version}</version>
         </dependency>
 
         <dependency>
@@ -106,24 +130,7 @@
         <dependency>
             <groupId>com.jcraft</groupId>
             <artifactId>jsch</artifactId>
-            <version>0.1.55</version> <!-- 更新为最新稳定版本 -->
-        </dependency>
-
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-lang3</artifactId>
-            <version>3.1</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>com.baomidou</groupId>
-            <artifactId>mybatis-plus-boot-starter</artifactId>
-            <version>3.3.2</version>
+            <version>${jsch.version}</version>
         </dependency>
 
     </dependencies>

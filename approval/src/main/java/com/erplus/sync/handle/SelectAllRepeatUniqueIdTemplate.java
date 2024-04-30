@@ -8,6 +8,7 @@ import com.erplus.sync.entity.template.SimpleTemplate;
 import com.erplus.sync.entity.template.TemplateComponent;
 import com.erplus.sync.utils.JschSessionUtils;
 import com.erplus.sync.utils.MysqlConnectionUtils;
+import com.erplus.sync.utils.Utils;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 
@@ -24,6 +25,8 @@ import java.util.stream.Collectors;
 @Slf4j
 public class SelectAllRepeatUniqueIdTemplate {
 
+
+    //查所有重复uniqueId的模板
     @Test
     public void selectAllRepeatUniqueIdTemplate() {
         try {
@@ -35,9 +38,12 @@ public class SelectAllRepeatUniqueIdTemplate {
             List<SimpleTemplate> simpleTemplates = templateDao.selectAllCompanyTemplate();
             for (SimpleTemplate simpleTemplate : simpleTemplates) {
                 List<TemplateComponent> templateComponentList = simpleTemplate.getTemplateComponentList();
-                Map<Integer, List<TemplateComponent>> numMap = templateComponentList.stream().collect(Collectors.groupingBy(TemplateComponent::getNum));
-                for (Integer num : numMap.keySet()) {
-                    List<TemplateComponent> templateComponents = numMap.get(num);
+                Map<Integer, List<TemplateComponent>> uniqueIdMap = templateComponentList.stream().collect(Collectors.groupingBy(TemplateComponent::getUniqueId));
+                for (Integer uniqueId : uniqueIdMap.keySet()) {
+                    List<TemplateComponent> templateComponents = uniqueIdMap.get(uniqueId);
+                    if (templateComponents.stream().allMatch(templateComponent -> templateComponent.getType() == 17)) {
+                        continue;
+                    }
                     if (templateComponents.size() > 1) {
                         log.info("有问题的组件:{}", JSONObject.toJSONString(templateComponents));
                         log.info("templateId:{}, ", simpleTemplate.getTemplateId());
@@ -48,16 +54,16 @@ public class SelectAllRepeatUniqueIdTemplate {
                     }
                 }
             }
-            List<String> templateIdHavPro = templateIds.stream().distinct().sorted((o1, o2) -> o2 - o1).map(String::valueOf).collect(Collectors.toList());
+            List<String> templateIdsStrList = templateIds.stream().distinct().sorted((o1, o2) -> o2 - o1).map(String::valueOf).collect(Collectors.toList());
             List<String> ancestorIdStr = ancestorIds.stream().distinct().sorted((o1, o2) -> o2 - o1).map(String::valueOf).collect(Collectors.toList());
-            log.info("templateIdSize:{}", templateIdHavPro.size());
-            String templateIdsStr = String.join(",", templateIdHavPro);
+            log.info("templateIdSize:{}", templateIdsStrList.size());
+            String templateIdsStr = String.join(",", templateIdsStrList);
             log.info("companyIds:{}", companyIds.size());
             log.info("templateIds:{}", templateIdsStr);
             log.info("ancestorIds:{}", String.join(",", ancestorIdStr));
             log.info("companyIds:{}", companyIds);
             try (BufferedWriter writer = new BufferedWriter(
-                    new OutputStreamWriter(Files.newOutputStream(new File("/Users/macos/Desktop/重复num的模板templateIds.txt").toPath()), StandardCharsets.UTF_8))) {
+                    new OutputStreamWriter(Files.newOutputStream(new File("/Users/macos/Desktop/重复的模板templateIds.txt").toPath()), StandardCharsets.UTF_8))) {
                 writer.write(templateIdsStr);
                 writer.newLine(); // 换行
             } catch (IOException e) {

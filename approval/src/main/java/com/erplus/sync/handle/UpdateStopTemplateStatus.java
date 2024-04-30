@@ -15,9 +15,9 @@ import java.util.Arrays;
 import java.util.List;
 
 @Slf4j
-public class UpdateTemplateStatus {
+public class UpdateStopTemplateStatus {
 
-    //把已停用的审批状态改成2
+    //历史上已停用的模板状态为0，但现在2表示停用，所以要把0改成2
     @Test
     public void updateTemplateStatus() {
         try {

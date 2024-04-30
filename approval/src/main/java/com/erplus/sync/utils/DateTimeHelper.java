@@ -5,6 +5,7 @@ import org.apache.commons.lang3.StringUtils;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Objects;
@@ -101,6 +102,12 @@ public class DateTimeHelper {
         }
         SimpleDateFormat format = new SimpleDateFormat(pattern);
         return format.format(date);
+    }
+
+    public static void main(String[] args) {
+        LocalDateTime date = LocalDateTime.now();
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        format.format(date);
     }
 
     /**

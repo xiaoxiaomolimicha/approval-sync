@@ -10,14 +10,7 @@
         <!-- <property name="basePath">d:/qfxSpringMVCMybaitsDemoLogs</property> -->
 
         <!-- 控制台默认输出格式,"%-5level":日志级别,"%l":输出完整的错误位置,是小写的L,因为有行号显示,所以影响日志输出的性能 -->
-<!--        <property name="console_log_pattern">[%-4level]  %d{yyyy-MM-dd HH:mm:ss.SSS} [userId=%X{userId}] %l - %m%n</property>-->
-<!--        <property name="console_log_pattern">%highlight{[%-4level]}{FATAL=red blink, ERROR=red bold, WARN=yellow bold, INFO=green bold, DEBUG=magenta bold, TRACE=cyan bold} [%d{yyyy-MM-dd HH:mm:ss}] %X{TRACE_ID}[%c] [%t]%m%n</property>-->
         <property name="console_log_pattern">%highlight{[%-4level]}{FATAL=red blink, ERROR=red bold, WARN=yellow bold, INFO=green bold, DEBUG=magenta bold, TRACE=cyan bold} [%d{yyyy-MM-dd HH:mm:ss}] %X{TRACE_ID} %c{1} %m%n</property>
-<!--        <property name="console_log_pattern">[%-4level] %d{yyyy-MM-dd HH:mm:ss.SSS} %logger{36} - %m%n</property>-->
-<!--        <property name="console_log_pattern">%highlight{%d{HH:mm:ss.SSS} [%t] %-5level }{FATAL=red blink, ERROR=red bold, WARN=yellow bold, INFO=green bold, DEBUG=magenta bold, TRACE=cyan bold}%logger{36} - %msg%n</property>-->
-        <!-- 日志文件默认输出格式,不带行号输出(行号显示会影响日志输出性能);%C:全路径类名,%c:简略类名(异步可用);%M:方法名;%m:错误信息;%n:换行 -->
-<!--        <property name="log_pattern">[%-4level] %d{yyyy-MM-dd HH:mm:ss.SSS} [userId=%X{userId}] %C.%M - %m%n</property>-->
-<!--        <property name="log_pattern">[%-4level] %d{yyyy-MM-dd HH:mm:ss} [time=%X{time}] %c %m%n</property>-->
         <property name="log_pattern">[%-4level] [%d{yyyy-MM-dd HH:mm:ss}] %X{TRACE_ID}[%c] %m%n</property>
 
         <!-- 日志默认切割的最小单位 -->
@@ -68,11 +61,6 @@
             <!-- 设置输出格式,不设置默认为:%m%n -->
             <PatternLayout pattern="${console_log_pattern}"/>
         </Console>
-
-<!--        <Async name="myAsync">-->
-<!--            &lt;!&ndash; 将控制台输出做异步操作 &ndash;&gt;-->
-<!--            <AppenderRef ref="Console"/>-->
-<!--        </Async>-->
 
         <!-- 打印root中指定的level级别以上的日志到文件 -->
         <RollingFile name="RollingFile" fileName="${rolling_fileName}" filePattern="${rolling_filePattern}">
@@ -146,17 +134,5 @@
         </root>
 
         <!-- additivity=false表示自己处理，不交给root处理 -->
-        <!--        <AsyncLogger name="com.ljw.controller.OrderController" level="debug" additivity="false">-->
-        <!--            <appender-ref ref="Console"/>-->
-        <!--        </AsyncLogger>-->
-
-<!--        <AsyncRoot level="${output_log_level}">-->
-<!--            <AppenderRef ref="myAsync"/>-->
-<!--            <appender-ref ref="RollingFile"/>-->
-<!--            <appender-ref ref="Console"/>-->
-<!--            <appender-ref ref="InfoFile"/>-->
-<!--            <appender-ref ref="WarnFile"/>-->
-<!--            <appender-ref ref="ErrorFile"/>-->
-<!--        </AsyncRoot>-->
     </loggers>
 </configuration>

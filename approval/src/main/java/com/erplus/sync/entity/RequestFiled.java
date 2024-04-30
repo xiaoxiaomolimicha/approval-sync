@@ -5,7 +5,6 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import com.erplus.sync.utils.DateTimeHelper;
 import lombok.Data;
 
-import java.text.SimpleDateFormat;
 import java.util.Date;
 
 @Data

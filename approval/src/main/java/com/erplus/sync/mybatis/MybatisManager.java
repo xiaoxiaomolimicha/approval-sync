@@ -1,10 +1,13 @@
 package com.erplus.sync.mybatis;
 
+import com.baomidou.mybatisplus.annotation.DbType;
 import com.baomidou.mybatisplus.core.MybatisConfiguration;
 import com.baomidou.mybatisplus.core.config.GlobalConfig;
 import com.baomidou.mybatisplus.core.injector.DefaultSqlInjector;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.toolkit.GlobalConfigUtils;
+import com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor;
+import com.baomidou.mybatisplus.extension.plugins.inner.PaginationInnerInterceptor;
 import com.erplus.sync.utils.DataSourceSingleton;
 import com.erplus.sync.utils.ForwardPortUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -12,6 +15,7 @@ import org.apache.ibatis.builder.xml.XMLMapperBuilder;
 import org.apache.ibatis.logging.log4j2.Log4j2Impl;
 import org.apache.ibatis.logging.stdout.StdOutImpl;
 import org.apache.ibatis.mapping.Environment;
+import org.apache.ibatis.plugin.Interceptor;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
@@ -40,22 +44,24 @@ public class MybatisManager {
                     SqlSessionFactoryBuilder builder = new SqlSessionFactoryBuilder();
                     //这是mybatis-plus的配置对象，对mybatis的Configuration进行增强
                     MybatisConfiguration configuration = new MybatisConfiguration();
-                    //这是初始化配置，后面会添加这部分代码
-                    initConfiguration(configuration);
-                    //这是初始化连接器，如mybatis-plus的分页插件
-                    //configuration.addInterceptor(initInterceptor());
+                    //开启驼峰大小写转换
+                    configuration.setMapUnderscoreToCamelCase(true);
+                    //配置添加数据自动返回数据主键
+                    configuration.setUseGeneratedKeys(true);
+                    //初始化拦截器，如mybatis-plus的分页插件
+                    configuration.addInterceptor(initInterceptor());
                     //配置日志实现
                     configuration.setLogImpl(Log4j2Impl.class);
                     //扫描mapper接口所在包
-                    configuration.addMappers("com.lhstack.mybatis.mapper");
-                    //构建mybatis-plus需要的globalconfig
+                    configuration.addMappers("com.erplus.sync.mapper");
+
+                    //构建mybatis-plus需要的globalConfig
                     GlobalConfig globalConfig = GlobalConfigUtils.getGlobalConfig(configuration);
                     //此参数会自动生成实现baseMapper的基础方法映射
                     globalConfig.setSqlInjector(new DefaultSqlInjector());
-                    //设置id生成器
-                    //globalConfig.setIdentifierGenerator(new DefaultIdentifierGenerator());
                     //设置超类mapper
                     globalConfig.setSuperMapperClass(BaseMapper.class);
+
                     //设置数据源
                     Environment environment = new Environment("molimicha", new JdbcTransactionFactory(), DataSourceSingleton.getDataSource());
                     configuration.setEnvironment(environment);
@@ -70,16 +76,16 @@ public class MybatisManager {
         return sqlSession;
     }
 
-    /**
-     * 初始化配置
-     *
-     * @param configuration
-     */
-    private static void initConfiguration(MybatisConfiguration configuration) {
-        //开启驼峰大小写转换
-        configuration.setMapUnderscoreToCamelCase(true);
-        //配置添加数据自动返回数据主键
-        configuration.setUseGeneratedKeys(true);
+    private static Interceptor initInterceptor() {
+        //创建mybatis-plus插件对象
+        MybatisPlusInterceptor interceptor = new MybatisPlusInterceptor();
+        //构建分页插件
+        PaginationInnerInterceptor paginationInnerInterceptor = new PaginationInnerInterceptor();
+        paginationInnerInterceptor.setDbType(DbType.MYSQL);
+        paginationInnerInterceptor.setOverflow(true);
+        paginationInnerInterceptor.setMaxLimit(500L);
+        interceptor.addInnerInterceptor(paginationInnerInterceptor);
+        return interceptor;
     }
 
     /**

@@ -10,7 +10,6 @@ import java.util.List;
  * @author xq
  */
 public interface ContentType {
-
     List<Integer> relateTypes = Arrays.asList(8, 9, 14, 30, 36, 37, 38, 39, 101, 102, 103);
     /**
      * 单行
@@ -40,11 +39,19 @@ public interface ContentType {
      * 单选
      */
     int SINGLE_CHOSEN = 7;
-
+    /**
+     * 关联任务
+     */
     int RELATED_TASK = 8;
-
+    /**
+     * 关联审批
+     */
     int RELATED_APPROVAL = 9;
 
+
+    /**
+     * 关联申购
+     */
     @Deprecated
     int RELATED_NEED_MONEY = 10;
     /**
@@ -78,6 +85,7 @@ public interface ContentType {
     int TIME_RANGE = 17;
     /**
      * 新时间段组件
+     * 暂时用不到
      */
     int NEW_TIME_RANGE = 18;
     /**
@@ -93,17 +101,14 @@ public interface ContentType {
     /**
      * 补卡班次
      */
-    @Deprecated
     int RECEIVE_CLOCK_TICK = 21;
     /**
      * 补卡类型
      */
-    @Deprecated
     int RECEIVE_CLOCK_TYPE = 22;
     /**
      * 补卡时段
      */
-    @Deprecated
     int RECEIVE_CLOCK_TIME = 23;
     /**
      * 组件集类型
@@ -121,6 +126,7 @@ public interface ContentType {
      * 组件集地点类型
      */
     int GROUP_LOCATION = 27;
+
     /**
      * 调休总时长
      */
@@ -141,6 +147,7 @@ public interface ContentType {
      */
     @Deprecated
     int DAYS_OFF_TYPE_NORMAL = 31;
+
 
     /**
      * 休息时段
@@ -165,22 +172,18 @@ public interface ContentType {
     /**
      * 产品组件
      */
-
     int PRODUCT = 36;
     /**
      * 关联项目
      */
-
     int PROGRAM = 37;
     /**
      * 人才档案
      */
-
     int TALENT = 38;
     /**
      * 关联商机
      */
-
     int BUSINESS_OPPORTUNITY = 39;
     /**
      * 部门选择
@@ -191,22 +194,21 @@ public interface ContentType {
      */
     int ARTICLE = 41;
 
-
+    /**
+     * 联系人
+     */
     int CRM_CONTACT = 42;
     /**
      * 订单
      */
-
     int RELATE_ORDER = 101;
     /**
      * 采购单
      */
-
     int RELATE_PURCHASE = 102;
     /**
      * 出库单
      */
-
     int OUT_STORE = 103;
 
 

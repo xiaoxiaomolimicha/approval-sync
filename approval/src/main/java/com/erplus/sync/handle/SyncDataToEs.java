@@ -24,6 +24,7 @@ import java.util.Map;
 @Slf4j
 public class SyncDataToEs {
 
+    //同步审批数据到es
     @Test
     public void syncDataToEs() throws Throwable {
         Connection connection = MysqlConnectionUtils.getMysqlConnection();
