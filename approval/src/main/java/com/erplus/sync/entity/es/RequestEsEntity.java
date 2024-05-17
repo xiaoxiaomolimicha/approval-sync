@@ -37,6 +37,8 @@ public class RequestEsEntity {
 
     private String finally_cc_time;
 
+    private Integer is_resubmit;
+
     private SummaryField summary_field;
 
     private SearchField search_field;

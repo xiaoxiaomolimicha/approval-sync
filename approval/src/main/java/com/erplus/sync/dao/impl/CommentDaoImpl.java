@@ -67,6 +67,57 @@ public class CommentDaoImpl extends AbstractDao implements CommentDao {
     }
 
     @Override
+    public Map<Integer, List<CommentEsEntity>> selectCommentByRequestIds(String requestIds) throws SQLException {
+        String sql = "select Fid, Frequest_id, Fcrt_at, Fmessage from request_comment where Frequest_id in (" + requestIds + ")";
+        Map<Integer, List<CommentEsEntity>> map = new HashMap<>();
+        try (PreparedStatement ps = getPreparedStatement(sql)){
+            logger.info(sql);
+            try (ResultSet rs = ps.executeQuery()){
+                while (rs.next()) {
+                    String message = rs.getString(4);
+                    //空数据不同步
+                    if (StringUtils.isBlank(message)) {
+                        continue;
+                    }
+                    CommentEsEntity commentEs = new CommentEsEntity();
+                    commentEs.setId(rs.getInt(1));
+                    commentEs.setRequest_id(rs.getInt(2));
+                    commentEs.setCrt_at(getTimeStr(rs.getTimestamp(3)));
+                    commentEs.setMessage(message);
+                    map.putIfAbsent(commentEs.getRequest_id(), new ArrayList<>());
+                    map.get(commentEs.getRequest_id()).add(commentEs);
+                }
+            }
+        }
+        return map;
+    }
+
+    @Override
+    public List<CommentEsEntity> selectCommentByRequestId(Integer requestId) throws SQLException {
+        String sql = "select Fid, Fcrt_at, Fmessage from request_comment where Frequest_id = ?";
+        List<CommentEsEntity> list = new ArrayList<>();
+        try (PreparedStatement ps = getPreparedStatement(sql)){
+            ps.setInt(1, requestId);
+            logger.info(SQLLogger.logSQL(sql, requestId));
+            try (ResultSet rs = ps.executeQuery()){
+                while (rs.next()) {
+                    String message = rs.getString(3);
+                    //空数据不同步
+                    if (StringUtils.isBlank(message)) {
+                        continue;
+                    }
+                    CommentEsEntity commentEs = new CommentEsEntity();
+                    commentEs.setId(rs.getInt(1));
+                    commentEs.setCrt_at(getTimeStr(rs.getTimestamp(2)));
+                    commentEs.setMessage(message);
+                    list.add(commentEs);
+                }
+            }
+        }
+        return list;
+    }
+
+    @Override
     String getQuerySql(String condition) {
         return null;
     }

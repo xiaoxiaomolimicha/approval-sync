@@ -14,7 +14,10 @@ import java.sql.Connection;
 import java.util.Arrays;
 import java.util.List;
 
+
+//全部公司的模板状态都已经更新了，所以这个方法没啥子用了
 @Slf4j
+@Deprecated
 public class UpdateStopTemplateStatus {
 
     //历史上已停用的模板状态为0，但现在2表示停用，所以要把0改成2
@@ -53,7 +56,6 @@ public class UpdateStopTemplateStatus {
         }
 
     }
-
 
 
 }

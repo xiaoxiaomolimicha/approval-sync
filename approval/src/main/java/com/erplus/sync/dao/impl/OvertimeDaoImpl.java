@@ -41,6 +41,25 @@ public class OvertimeDaoImpl extends AbstractDao implements OvertimeDao {
     }
 
     @Override
+    public List<LeaveOvertimeOutdoorEsEntity> selectOvertimeByRequestId(Integer requestId) throws SQLException {
+        String sql = "select id, duration from sys_approval_overtime where request_id = ?";
+        List<LeaveOvertimeOutdoorEsEntity> list = new ArrayList<>();
+        try (PreparedStatement ps = getPreparedStatement(sql)) {
+            ps.setInt(1, requestId);
+            logger.info(SQLLogger.logSQL(sql, requestId));
+            try (ResultSet rs = ps.executeQuery()){
+                while (rs.next()) {
+                    LeaveOvertimeOutdoorEsEntity leaveOvertimeOutdoorEsEntity = new LeaveOvertimeOutdoorEsEntity();
+                    leaveOvertimeOutdoorEsEntity.setId(rs.getInt(1));
+                    leaveOvertimeOutdoorEsEntity.setDuration(rs.getInt(2));
+                    list.add(leaveOvertimeOutdoorEsEntity);
+                }
+            }
+        }
+        return list;
+    }
+
+    @Override
     public Map<Integer, List<LeaveOvertimeOutdoorEsEntity>> selectOneCompanyOvertime(Integer companyId, String createTime) throws SQLException {
         String sql = "select ao.request_id, ao.id, ao.duration " +
                 "from request_flow f " +
@@ -54,6 +73,26 @@ public class OvertimeDaoImpl extends AbstractDao implements OvertimeDao {
         try (PreparedStatement ps = getPreparedStatement(sql)){
             ps.setInt(1, companyId);
             logger.info(SQLLogger.logSQL(sql, companyId));
+            try (ResultSet rs = ps.executeQuery()){
+                while (rs.next()) {
+                    LeaveOvertimeOutdoorEsEntity leaveOvertimeOutdoorEsEntity = new LeaveOvertimeOutdoorEsEntity();
+                    leaveOvertimeOutdoorEsEntity.setRequest_id(rs.getInt(1));
+                    leaveOvertimeOutdoorEsEntity.setId(rs.getInt(2));
+                    leaveOvertimeOutdoorEsEntity.setDuration(rs.getInt(3));
+                    map.putIfAbsent(leaveOvertimeOutdoorEsEntity.getRequest_id(), new ArrayList<>());
+                    map.get(leaveOvertimeOutdoorEsEntity.getRequest_id()).add(leaveOvertimeOutdoorEsEntity);
+                }
+            }
+        }
+        return map;
+    }
+
+    @Override
+    public Map<Integer, List<LeaveOvertimeOutdoorEsEntity>> selectOvertimeByRequestIds(String requestIds) throws SQLException {
+        String sql = "select request_id, id, duration from sys_approval_overtime where request_id in (" + requestIds + ")";
+        Map<Integer, List<LeaveOvertimeOutdoorEsEntity>> map = new HashMap<>();
+        try (PreparedStatement ps = getPreparedStatement(sql)){
+            logger.info(sql);
             try (ResultSet rs = ps.executeQuery()){
                 while (rs.next()) {
                     LeaveOvertimeOutdoorEsEntity leaveOvertimeOutdoorEsEntity = new LeaveOvertimeOutdoorEsEntity();

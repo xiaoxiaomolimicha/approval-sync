@@ -73,6 +73,49 @@ public class CcDaoImpl extends AbstractDao implements CcDao {
     }
 
     @Override
+    public Map<Integer, List<RequestFieldEsEntity>> selectCCByRequestIds(String requestIds) throws SQLException {
+        String sql = "select Fid, Frequest_id, Fwho_filed_ciid, Ffiled_status, Fcreate_time from request_filed where Frequest_id in (" + requestIds + ")";
+        Map<Integer, List<RequestFieldEsEntity>> map = new HashMap<>();
+        try (PreparedStatement ps = getPrepareStatement(sql)){
+            logger.info(sql);
+            try (ResultSet rs = ps.executeQuery()){
+                while (rs.next()) {
+                    RequestFieldEsEntity requestFieldEs= new RequestFieldEsEntity();
+                    requestFieldEs.setId(rs.getInt(1));
+                    requestFieldEs.setRequest_id(rs.getInt(2));
+                    requestFieldEs.setWho_filed_ciid(rs.getInt(3));
+                    requestFieldEs.setFiled_status(rs.getInt(4));
+                    requestFieldEs.setCreate_time(getTimeStr(rs.getTimestamp(5)));
+
+                    map.putIfAbsent(requestFieldEs.getRequest_id(), new ArrayList<>());
+                    map.get(requestFieldEs.getRequest_id()).add(requestFieldEs);
+                }
+            }
+        }
+        return map;
+    }
+
+    public List<RequestFieldEsEntity> selectCCByRequestId(Integer requestId) throws SQLException {
+        String sql = "select Fid, Fwho_filed_ciid, Ffiled_status, Fcreate_time from request_filed where Frequest_id = ?";
+        List<RequestFieldEsEntity> list = new ArrayList<>();
+        try (PreparedStatement ps = getPrepareStatement(sql)){
+            ps.setInt(1, requestId);
+            logger.info(SQLLogger.logSQL(sql, requestId));
+            try (ResultSet rs = ps.executeQuery()){
+                while (rs.next()) {
+                    RequestFieldEsEntity requestFieldEs = new RequestFieldEsEntity();
+                    requestFieldEs.setId(rs.getInt(1));
+                    requestFieldEs.setWho_filed_ciid(rs.getInt(2));
+                    requestFieldEs.setFiled_status(rs.getInt(3));
+                    requestFieldEs.setCreate_time(getTimeStr(rs.getTimestamp(4)));
+                    list.add(requestFieldEs);
+                }
+            }
+        }
+        return list;
+    }
+
+    @Override
     public List<RequestFiled> selectOneCompanyAllRequestFiled(Integer companyId) throws SQLException {
         String sql = "select Fid, Frequest_id, Fwho_filed, Fwho_filed_mcid, Fwho_filed_ciid, " +
                 "Ffiled_time, Fcompany_id, Fstatus, Fdisable_time, Fcreate_time, " +

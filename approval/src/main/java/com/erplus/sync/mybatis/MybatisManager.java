@@ -42,27 +42,27 @@ public class MybatisManager {
                 if (sqlSession == null) {
                     ForwardPortUtils.forwardMysqlPort();
                     SqlSessionFactoryBuilder builder = new SqlSessionFactoryBuilder();
-                    //这是mybatis-plus的配置对象，对mybatis的Configuration进行增强
+                    // mybatis-plus的配置对象，对mybatis的Configuration进行增强
                     MybatisConfiguration configuration = new MybatisConfiguration();
-                    //开启驼峰大小写转换
+                    // 开启驼峰大小写转换
                     configuration.setMapUnderscoreToCamelCase(true);
-                    //配置添加数据自动返回数据主键
+                    // 配置添加数据自动返回数据主键
                     configuration.setUseGeneratedKeys(true);
-                    //初始化拦截器，如mybatis-plus的分页插件
+                    // 初始化拦截器，如mybatis-plus的分页插件
                     configuration.addInterceptor(initInterceptor());
-                    //配置日志实现
+                    // 配置日志实现
                     configuration.setLogImpl(Log4j2Impl.class);
-                    //扫描mapper接口所在包
+                    // 扫描mapper接口所在包
                     configuration.addMappers("com.erplus.sync.mapper");
 
-                    //构建mybatis-plus需要的globalConfig
+                    // 构建mybatis-plus需要的globalConfig
                     GlobalConfig globalConfig = GlobalConfigUtils.getGlobalConfig(configuration);
-                    //此参数会自动生成实现baseMapper的基础方法映射
+                    // 此参数会自动生成实现baseMapper的基础方法映射
                     globalConfig.setSqlInjector(new DefaultSqlInjector());
-                    //设置超类mapper
+                    // 设置超类mapper
                     globalConfig.setSuperMapperClass(BaseMapper.class);
 
-                    //设置数据源
+                    // 设置数据源
                     Environment environment = new Environment("molimicha", new JdbcTransactionFactory(), DataSourceSingleton.getDataSource());
                     configuration.setEnvironment(environment);
                     registryMapperXml(configuration, "mapper");

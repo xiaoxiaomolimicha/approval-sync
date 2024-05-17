@@ -11,4 +11,9 @@ public interface OvertimeDao {
 
     Map<Integer, List<LeaveOvertimeOutdoorEsEntity>> selectOneCompanyOvertime(Integer companyId, String createTime) throws SQLException;
 
+    Map<Integer, List<LeaveOvertimeOutdoorEsEntity>> selectOvertimeByRequestIds(String requestIds) throws SQLException;
+
+    List<LeaveOvertimeOutdoorEsEntity> selectOvertimeByRequestId(Integer requestId) throws SQLException;
+
+
 }

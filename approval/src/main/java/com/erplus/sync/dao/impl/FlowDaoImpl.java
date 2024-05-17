@@ -65,6 +65,55 @@ public class FlowDaoImpl extends AbstractDao implements FlowDao {
     }
 
     @Override
+    public Map<Integer, List<ApprovalFlowEsEntity>> selectFlowByRequestIds(String requestIds) throws SQLException {
+        String sql = "select id, request_id, state, is_approved, is_approved_at, company_info_id, contact_id from sys_approval_flow where request_id in (" + requestIds + ")";
+        Map<Integer, List<ApprovalFlowEsEntity>> map = new HashMap<>();
+        try (PreparedStatement ps = getPreparedStatement(sql)){
+            logger.info(sql);
+            try (ResultSet rs = ps.executeQuery()){
+                while (rs.next()) {
+                    ApprovalFlowEsEntity flowEs = new ApprovalFlowEsEntity();
+                    flowEs.setId(rs.getInt(1));
+                    flowEs.setRequest_id(rs.getInt(2));
+                    flowEs.setState(rs.getInt(3));
+                    flowEs.setIs_approved(rs.getInt(4));
+                    flowEs.setIs_approved_at(getTimeStr(rs.getTimestamp(5)));
+
+                    flowEs.setCompany_info_id(rs.getInt(6));
+                    flowEs.setContact_id(rs.getInt(7));
+                    map.putIfAbsent(flowEs.getRequest_id(), new ArrayList<>());
+                    map.get(flowEs.getRequest_id()).add(flowEs);
+                }
+            }
+        }
+        return map;
+    }
+
+    @Override
+    public List<ApprovalFlowEsEntity> selectFlowByRequestId(Integer requestId) throws SQLException {
+        String sql = "select id, state, is_approved, is_approved_at, company_info_id, contact_id from sys_approval_flow flow where request_id = ?";
+        List<ApprovalFlowEsEntity> list = new ArrayList<>();
+        try (PreparedStatement ps = getPreparedStatement(sql)){
+            ps.setInt(1, requestId);
+            logger.info(SQLLogger.logSQL(sql, requestId));
+            try (ResultSet rs = ps.executeQuery()){
+                while (rs.next()) {
+                    ApprovalFlowEsEntity flowEs = new ApprovalFlowEsEntity();
+                    flowEs.setId(rs.getInt(1));
+                    flowEs.setState(rs.getInt(2));
+                    flowEs.setIs_approved(rs.getInt(3));
+                    flowEs.setIs_approved_at(getTimeStr(rs.getTimestamp(4)));
+                    flowEs.setCompany_info_id(rs.getInt(5));
+
+                    flowEs.setContact_id(rs.getInt(6));
+                    list.add(flowEs);
+                }
+            }
+            return list;
+        }
+    }
+
+    @Override
     String getQuerySql(String condition) {
         return null;
     }

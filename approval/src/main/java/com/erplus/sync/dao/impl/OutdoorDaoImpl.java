@@ -43,6 +43,34 @@ public class OutdoorDaoImpl extends AbstractDao implements OutdoorDao {
     }
 
     @Override
+    public List<LeaveOvertimeOutdoorEsEntity> selectOutdoorByRequestId(Integer requestId) throws SQLException {
+        String sql = "select id, duration from sys_approval_outdoor where request_id = ?";
+        List<LeaveOvertimeOutdoorEsEntity> list = new ArrayList<>();
+        try (PreparedStatement ps = getPreparedStatement(sql)){
+            ps.setInt(1, requestId);
+            logger.info(SQLLogger.logSQL(sql, requestId));
+            try (ResultSet rs = ps.executeQuery()){
+                while (rs.next()) {
+                    LeaveOvertimeOutdoorEsEntity leaveOvertimeOutdoorEsEntity = new LeaveOvertimeOutdoorEsEntity();
+                    leaveOvertimeOutdoorEsEntity.setId(rs.getInt(1));
+                    leaveOvertimeOutdoorEsEntity.setDuration(rs.getInt(2));
+                    //只保存最新的一条数据
+                    if (list.isEmpty()) {
+                        list.add(leaveOvertimeOutdoorEsEntity);
+                    } else {
+                        LeaveOvertimeOutdoorEsEntity first = list.get(0);
+                        if (first.getId() < leaveOvertimeOutdoorEsEntity.getId()) {
+                            list.remove(0);
+                            list.add(leaveOvertimeOutdoorEsEntity);
+                        }
+                    }
+                }
+            }
+        }
+        return list;
+    }
+
+    @Override
     public Map<Integer, List<LeaveOvertimeOutdoorEsEntity>> selectOneCompanyAllOutdoor(Integer companyId, String createTime) throws SQLException {
         String sql = "select ao.request_id, ao.id, ao.duration " +
                 "from request_flow f " +
@@ -56,6 +84,36 @@ public class OutdoorDaoImpl extends AbstractDao implements OutdoorDao {
         try (PreparedStatement ps = getPreparedStatement(sql)){
             ps.setInt(1, companyId);
             logger.info(SQLLogger.logSQL(sql, companyId));
+            try (ResultSet rs = ps.executeQuery()){
+                while (rs.next()) {
+                    LeaveOvertimeOutdoorEsEntity leaveOvertimeOutdoorEsEntity = new LeaveOvertimeOutdoorEsEntity();
+                    leaveOvertimeOutdoorEsEntity.setRequest_id(rs.getInt(1));
+                    leaveOvertimeOutdoorEsEntity.setId(rs.getInt(2));
+                    leaveOvertimeOutdoorEsEntity.setDuration(rs.getInt(3));
+                    map.putIfAbsent(leaveOvertimeOutdoorEsEntity.getRequest_id(), new ArrayList<>());
+                    List<LeaveOvertimeOutdoorEsEntity> leaveOvertimeOutdoorEsEntities = map.get(leaveOvertimeOutdoorEsEntity.getRequest_id());
+                    //只保存最新的一条数据
+                    if (leaveOvertimeOutdoorEsEntities.isEmpty()) {
+                        leaveOvertimeOutdoorEsEntities.add(leaveOvertimeOutdoorEsEntity);
+                    } else {
+                        LeaveOvertimeOutdoorEsEntity first = leaveOvertimeOutdoorEsEntities.get(0);
+                        if (first.getId() < leaveOvertimeOutdoorEsEntity.getId()) {
+                            leaveOvertimeOutdoorEsEntities.remove(0);
+                            leaveOvertimeOutdoorEsEntities.add(leaveOvertimeOutdoorEsEntity);
+                        }
+                    }
+                }
+            }
+        }
+        return map;
+    }
+
+    @Override
+    public Map<Integer, List<LeaveOvertimeOutdoorEsEntity>> selectOutdoorByRequestIds(String requestIds) throws SQLException {
+        String sql = "select request_id, id, duration from sys_approval_outdoor where request_id in (" + requestIds + ")";
+        Map<Integer, List<LeaveOvertimeOutdoorEsEntity>> map = new HashMap<>();
+        try (PreparedStatement ps = getPreparedStatement(sql)){
+            logger.info(sql);
             try (ResultSet rs = ps.executeQuery()){
                 while (rs.next()) {
                     LeaveOvertimeOutdoorEsEntity leaveOvertimeOutdoorEsEntity = new LeaveOvertimeOutdoorEsEntity();

@@ -11,4 +11,8 @@ public interface ExpenseDao {
 
     Map<Integer, List<ExpenseEsEntity>> selectOneCompanyAllExpense(Integer companyId, String createTime) throws SQLException;
 
+    Map<Integer, List<ExpenseEsEntity>> selectExpenseByRequestIds(String requestIds) throws SQLException;
+
+    List<ExpenseEsEntity> selectExpenseByRequestId(Integer requestId) throws SQLException;
+
 }

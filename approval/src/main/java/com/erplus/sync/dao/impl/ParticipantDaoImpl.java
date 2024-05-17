@@ -31,6 +31,28 @@ public class ParticipantDaoImpl extends AbstractDao implements ParticipantDao {
     }
 
     @Override
+    public List<ParticipantEsEntity> selectParticipantByRequestId(Integer requestId) throws SQLException {
+        String sql = "select id, contact_id, company_info_id, create_time from sys_approval_participant where request_id = ?";
+        List<ParticipantEsEntity> list = new ArrayList<>();
+        try (PreparedStatement ps = getPreparedStatement(sql)){
+            ps.setInt(1, requestId);
+            logger.info(SQLLogger.logSQL(sql, requestId));
+            try (ResultSet rs = ps.executeQuery()){
+                while (rs.next()) {
+                    ParticipantEsEntity participantEs = new ParticipantEsEntity();
+                    participantEs.setId(rs.getInt(1));
+                    participantEs.setContact_id(rs.getInt(2));
+                    participantEs.setCompany_info_id(rs.getInt(3));
+                    participantEs.setCreate_time(getTimeStr(rs.getTimestamp(4)));
+
+                    list.add(participantEs);
+                }
+            }
+        }
+        return list;
+    }
+
+    @Override
     public Map<Integer, List<ParticipantEsEntity>> selectOneCompanyAllParticipant(Integer companyId, String createTime) throws SQLException {
         String sql = "select id, request_id, contact_id, company_info_id, create_time " +
                 "from request_flow rf " +
@@ -44,6 +66,29 @@ public class ParticipantDaoImpl extends AbstractDao implements ParticipantDao {
         try (PreparedStatement ps = getPreparedStatement(sql)){
             ps.setInt(1, companyId);
             logger.info(SQLLogger.logSQL(sql, companyId));
+            try (ResultSet rs = ps.executeQuery()){
+                while (rs.next()) {
+                    ParticipantEsEntity participantEs = new ParticipantEsEntity();
+                    participantEs.setId(rs.getInt(1));
+                    participantEs.setRequest_id(rs.getInt(2));
+                    participantEs.setContact_id(rs.getInt(3));
+                    participantEs.setCompany_info_id(rs.getInt(4));
+                    participantEs.setCreate_time(getTimeStr(rs.getTimestamp(5)));
+
+                    map.putIfAbsent(participantEs.getRequest_id(), new ArrayList<>());
+                    map.get(participantEs.getRequest_id()).add(participantEs);
+                }
+            }
+        }
+        return map;
+    }
+
+    @Override
+    public Map<Integer, List<ParticipantEsEntity>> selectParticipantByRequestIds(String requestIds) throws SQLException {
+        String sql = "select id, request_id, contact_id, company_info_id, create_time from sys_approval_participant where request_id in (" + requestIds + ")";
+        Map<Integer, List<ParticipantEsEntity>> map = new HashMap<>();
+        try (PreparedStatement ps = getPreparedStatement(sql)){
+            logger.info(sql);
             try (ResultSet rs = ps.executeQuery()){
                 while (rs.next()) {
                     ParticipantEsEntity participantEs = new ParticipantEsEntity();

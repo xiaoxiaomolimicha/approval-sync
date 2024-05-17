@@ -1,5 +1,6 @@
 package com.erplus.sync.utils;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
 import java.sql.Timestamp;
@@ -11,6 +12,7 @@ import java.util.Date;
 import java.util.Objects;
 import java.util.TimeZone;
 
+@Slf4j
 public class DateTimeHelper {
 
 
@@ -61,9 +63,8 @@ public class DateTimeHelper {
         try {
             return fmt.parse(value);
         } catch (ParseException e) {
-            e.printStackTrace();
+            return null;
         }
-        return null;
     }
 
     /**

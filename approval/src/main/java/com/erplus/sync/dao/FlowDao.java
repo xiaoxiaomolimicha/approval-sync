@@ -10,4 +10,9 @@ import java.util.Map;
 
 public interface FlowDao {
     Map<Integer, List<ApprovalFlowEsEntity>> selectOneCompanyAllFlow(Integer companyId, String createTime) throws SQLException;
+
+    Map<Integer, List<ApprovalFlowEsEntity>> selectFlowByRequestIds(String requestIds) throws SQLException;
+
+    List<ApprovalFlowEsEntity> selectFlowByRequestId(Integer requestId) throws SQLException;
+
 }

@@ -42,8 +42,28 @@ public class ExpenseDaoImpl extends AbstractDao implements ExpenseDao {
         return null;
     }
 
+    public List<ExpenseEsEntity> selectExpenseByRequestId(Integer requestId) throws SQLException{
+        String sql = "select id, pay_amount, total_amount, pay_date from sys_approval_expense where request_id = ?";
+        List<ExpenseEsEntity> list = new ArrayList<>();
+        try (PreparedStatement ps = getPreparedStatement(sql)){
+            ps.setInt(1, requestId);
+            logger.info(SQLLogger.logSQL(sql, requestId));
+            try (ResultSet rs = ps.executeQuery()){
+                while (rs.next()) {
+                    ExpenseEsEntity expenseEsEntity = new ExpenseEsEntity();
+                    expenseEsEntity.setId(rs.getInt(1));
+                    expenseEsEntity.setPay_amount(rs.getBigDecimal(2).stripTrailingZeros().toPlainString());
+                    expenseEsEntity.setTotal_amount(rs.getBigDecimal(3).stripTrailingZeros().toPlainString());
+                    expenseEsEntity.setPay_date(getTimeStr(rs.getTimestamp(4), DateTimeHelper.YEAR_MONTH_DAY_PATTERN));
+                    list.add(expenseEsEntity);
+                }
+            }
+        }
+        return list;
+    }
+
     @Override
-    public Map<Integer, List<ExpenseEsEntity>> selectOneCompanyAllExpense(Integer companyId, String createTime) throws SQLException{
+    public Map<Integer, List<ExpenseEsEntity>> selectOneCompanyAllExpense(Integer companyId, String createTime) throws SQLException {
         String sql = "select ex.request_id, ex.id, ex.pay_amount, ex.total_amount, ex.pay_date " +
                 "from request_flow f " +
                 "inner join sys_approval_expense ex " +
@@ -71,4 +91,27 @@ public class ExpenseDaoImpl extends AbstractDao implements ExpenseDao {
         }
         return map;
     }
+
+    @Override
+    public Map<Integer, List<ExpenseEsEntity>> selectExpenseByRequestIds(String requestIds) throws SQLException {
+        String sql = "select request_id, id, pay_amount, total_amount, pay_date from sys_approval_expense where request_id in (" + requestIds + ")";
+        Map<Integer, List<ExpenseEsEntity>> map = new HashMap<>();
+        try (PreparedStatement ps = getPreparedStatement(sql)){
+            logger.info(sql);
+            try (ResultSet rs = ps.executeQuery()){
+                while (rs.next()) {
+                    ExpenseEsEntity expenseEsEntity = new ExpenseEsEntity();
+                    expenseEsEntity.setRequest_id(rs.getInt(1));
+                    expenseEsEntity.setId(rs.getInt(2));
+                    expenseEsEntity.setPay_amount(rs.getBigDecimal(3).stripTrailingZeros().toPlainString());
+                    expenseEsEntity.setTotal_amount(rs.getBigDecimal(4).stripTrailingZeros().toPlainString());
+                    expenseEsEntity.setPay_date(getTimeStr(rs.getTimestamp(5), DateTimeHelper.YEAR_MONTH_DAY_PATTERN));
+                    map.putIfAbsent(expenseEsEntity.getRequest_id(), new ArrayList<>());
+                    map.get(expenseEsEntity.getRequest_id()).add(expenseEsEntity);
+                }
+            }
+        }
+        return map;
+    }
+
 }

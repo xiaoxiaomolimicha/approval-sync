@@ -14,5 +14,9 @@ public interface CcDao {
 
     Map<Integer, List<RequestFieldEsEntity>> selectOneCompanyAllCc(Integer companyId, String createTime) throws SQLException;
 
+    Map<Integer, List<RequestFieldEsEntity>> selectCCByRequestIds(String requestIds) throws SQLException;
+
+    List<RequestFieldEsEntity> selectCCByRequestId(Integer requestId) throws SQLException;
+
     List<RequestFiled> selectOneCompanyAllRequestFiled(Integer companyId) throws SQLException;
 }

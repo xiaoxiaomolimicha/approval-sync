@@ -8,7 +8,9 @@ import com.erplus.sync.entity.es.GroupComponentEsEntity;
 import com.erplus.sync.entity.es.GroupNestedComponent;
 import com.erplus.sync.entity.template.TemplateComponent;
 import com.erplus.sync.utils.ComponentUtils;
+import com.erplus.sync.utils.DateTimeHelper;
 import com.erplus.sync.utils.SQLLogger;
+import com.erplus.sync.utils.Utils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -68,8 +70,12 @@ public class ComponentImpl extends AbstractDao implements ComponentDao {
                     String dateValue = ComponentUtils.getDateValue(value, type);
                     String floatValue = ComponentUtils.getFloatValue(value, type);
                     componentEs.setValue(formatValue);
-                    componentEs.setDate_value(dateValue);
-                    componentEs.setFloat_value(floatValue);
+                    if (dateValue != null) {
+                        componentEs.setDate_value(dateValue);
+                    }
+                    if (floatValue != null) {
+                        componentEs.setFloat_value(floatValue);
+                    }
                     componentEs.setType(type);
                     map.putIfAbsent(componentEs.getRequest_id(), new ArrayList<>());
                     map.get(componentEs.getRequest_id()).add(componentEs);
@@ -78,6 +84,48 @@ public class ComponentImpl extends AbstractDao implements ComponentDao {
         }
         return map;
     }
+
+    @Override
+    public Map<Integer, List<ComponentEsEntity>> selectComponentByRequestIds(String requestIds) throws SQLException {
+        String sql = "select Frequest_id, Fid, Fcomponent_num, Funique_id, Fcontent, Fcontent_type from request_content where Frequest_id in (" + requestIds + ")";
+        Map<Integer, List<ComponentEsEntity>> map = new HashMap<>();
+        try (PreparedStatement ps = getPreparedStatement(sql)){
+            logger.info(sql);
+            try (ResultSet rs = ps.executeQuery()){
+                while (rs.next()) {
+                    int type = rs.getInt(6);
+                    int num = rs.getInt(3);
+                    String value = rs.getString(5);
+                    //不需要上传到es的组件
+                    if (Constants.noNeedSyncTypes.contains(type)
+                            || (Objects.equals(type, 0) && Objects.equals(num, 0)) //被删除了数据
+                            || !ComponentUtils.needSyncComponentToEs(value, type)) { //空数据
+                        continue;
+                    }
+                    ComponentEsEntity componentEs = new ComponentEsEntity();
+                    componentEs.setRequest_id(rs.getInt(1));
+                    componentEs.setId(rs.getInt(2));
+                    componentEs.setNum(num);
+                    componentEs.setUnique_id(rs.getInt(4));
+                    String formatValue = ComponentUtils.formatEsComponentValue(value, type);
+                    String dateValue = ComponentUtils.getDateValue(value, type);
+                    String floatValue = ComponentUtils.getFloatValue(value, type);
+                    componentEs.setValue(formatValue);
+                    if (dateValue != null) {
+                        componentEs.setDate_value(dateValue);
+                    }
+                    if (floatValue != null) {
+                        componentEs.setFloat_value(floatValue);
+                    }
+                    componentEs.setType(type);
+                    map.putIfAbsent(componentEs.getRequest_id(), new ArrayList<>());
+                    map.get(componentEs.getRequest_id()).add(componentEs);
+                }
+            }
+        }
+        return map;
+    }
+
 
     @Override
     public Map<Integer, List<GroupComponentEsEntity>> selectOneCompanyAllGroupComponent(Integer companyId, String createTime) throws SQLException {
@@ -128,7 +176,53 @@ public class ComponentImpl extends AbstractDao implements ComponentDao {
                     }
                     map.putIfAbsent(groupComponentEs.getRequest_id(), new ArrayList<>());
                     map.get(groupComponentEs.getRequest_id()).add(groupComponentEs);
+                }
+            }
+        }
+        return map;
+    }
 
+    @Override
+    public Map<Integer, List<GroupComponentEsEntity>> selectGroupComponentByRequestIds(String requestIds) throws SQLException {
+        String sql = "select id, request_id, component_group_id, value from sys_approval_component_group_value where request_id in (" + requestIds + ")";
+        Map<Integer, List<GroupComponentEsEntity>> map = new HashMap<>();
+        try (PreparedStatement ps = getPreparedStatement(sql)){
+            logger.info(sql);
+            try (ResultSet rs = ps.executeQuery()){
+                while (rs.next()) {
+                    GroupComponentEsEntity groupComponentEs = new GroupComponentEsEntity();
+                    groupComponentEs.setId(rs.getInt(1));
+                    groupComponentEs.setRequest_id(rs.getInt(2));
+                    groupComponentEs.setComponent_group_id(rs.getInt(3));
+                    String value = rs.getString(4);
+                    if (StringUtils.isBlank(value)) {
+                        groupComponentEs.setComponent(new ArrayList<>());
+                    } else {
+                        List<GroupNestedComponent> groupNestedComponents = JSONObject.parseArray(value, GroupNestedComponent.class);
+                        List<GroupNestedComponent> needSyncGroupNestedComponents = new ArrayList<>();
+                        for (GroupNestedComponent groupNestedComponent : groupNestedComponents) {
+                            String componentValue = groupNestedComponent.getValue();
+                            Integer type = groupNestedComponent.getType();
+                            if (Constants.noNeedSyncTypes.contains(type)
+                                    || !ComponentUtils.needSyncComponentToEs(componentValue, type)){
+                                continue;
+                            }
+                            String formatValue = ComponentUtils.formatEsComponentValue(componentValue, type);
+                            String dateValue = ComponentUtils.getDateValue(componentValue, type);
+                            String floatValue = ComponentUtils.getFloatValue(componentValue, type);
+                            groupNestedComponent.setValue(formatValue);
+                            if (dateValue != null) {
+                                groupNestedComponent.setDate_value(dateValue);
+                            }
+                            if (floatValue != null) {
+                                groupNestedComponent.setFloat_value(floatValue);
+                            }
+                            needSyncGroupNestedComponents.add(groupNestedComponent);
+                        }
+                        groupComponentEs.setComponent(needSyncGroupNestedComponents);
+                    }
+                    map.putIfAbsent(groupComponentEs.getRequest_id(), new ArrayList<>());
+                    map.get(groupComponentEs.getRequest_id()).add(groupComponentEs);
                 }
             }
         }
@@ -172,6 +266,92 @@ public class ComponentImpl extends AbstractDao implements ComponentDao {
             logger.info(SQLLogger.logSQL(sql, num, uniqueId, type, id));
             ps.executeUpdate();
         }
+    }
+
+    @Override
+    public List<ComponentEsEntity> selectComponentByRequestId(Integer requestId) throws SQLException {
+        String sql = "select Fid, Fcomponent_num, Funique_id, Fcontent, Fcontent_type from request_content where Frequest_id = ?";
+        List<ComponentEsEntity> list = new ArrayList<>();
+        try (PreparedStatement ps = getPreparedStatement(sql)){
+            ps.setInt(1, requestId);
+            logger.info(SQLLogger.logSQL(sql, requestId));
+            try (ResultSet rs = ps.executeQuery()){
+                while (rs.next()) {
+                    int type = rs.getInt(5);
+                    int num = rs.getInt(2);
+                    String value = rs.getString(4);
+                    //不需要上传到es的组件
+                    if (Constants.noNeedSyncTypes.contains(type)
+                            || (Objects.equals(type, 0) && Objects.equals(num, 0)) //被删除了数据
+                            || !ComponentUtils.needSyncComponentToEs(value, type)) { //空数据
+                        continue;
+                    }
+                    ComponentEsEntity componentEs = new ComponentEsEntity();
+                    componentEs.setId(rs.getInt(1));
+                    componentEs.setNum(num);
+                    componentEs.setUnique_id(rs.getInt(3));
+                    String formatValue = ComponentUtils.formatEsComponentValue(value, type);
+                    componentEs.setValue(formatValue);
+                    String dateValue = ComponentUtils.getDateValue(value, type);
+                    if (dateValue != null) {
+                        componentEs.setDate_value(dateValue);
+                    }
+                    String floatValue = ComponentUtils.getFloatValue(value, type);
+                    if (floatValue != null) {
+                        componentEs.setFloat_value(floatValue);
+                    }
+                    componentEs.setType(type);
+                    list.add(componentEs);
+                }
+            }
+        }
+        return list;
+    }
+
+    @Override
+    public List<GroupComponentEsEntity> selectGroupComponentByRequestId(Integer requestId) throws SQLException {
+        String sql = "select id, component_group_id, value from sys_approval_component_group_value where request_id = ?";
+        List<GroupComponentEsEntity> list = new ArrayList<>();
+        try (PreparedStatement ps = getPreparedStatement(sql)){
+            ps.setInt(1, requestId);
+            logger.info(SQLLogger.logSQL(sql, requestId));
+            try (ResultSet rs = ps.executeQuery()){
+                while (rs.next()) {
+                    GroupComponentEsEntity groupComponentEs = new GroupComponentEsEntity();
+                    groupComponentEs.setId(rs.getInt(1));
+                    groupComponentEs.setComponent_group_id(rs.getInt(2));
+                    String value = rs.getString(3);
+                    if (StringUtils.isBlank(value)) {
+                        groupComponentEs.setComponent(new ArrayList<>());
+                    } else {
+                        List<GroupNestedComponent> groupNestedComponents = JSONObject.parseArray(value, GroupNestedComponent.class);
+                        List<GroupNestedComponent> needSyncGroupNestedComponents = new ArrayList<>();
+                        for (GroupNestedComponent groupNestedComponent : groupNestedComponents) {
+                            String componentValue = groupNestedComponent.getValue();
+                            Integer type = groupNestedComponent.getType();
+                            if (Constants.noNeedSyncTypes.contains(type)
+                                    || !ComponentUtils.needSyncComponentToEs(componentValue, type)){
+                                continue;
+                            }
+                            String formatValue = ComponentUtils.formatEsComponentValue(componentValue, type);
+                            String dateValue = ComponentUtils.getDateValue(componentValue, type);
+                            String floatValue = ComponentUtils.getFloatValue(componentValue, type);
+                            groupNestedComponent.setValue(formatValue);
+                            if (dateValue != null) {
+                                groupNestedComponent.setDate_value(dateValue);
+                            }
+                            if (floatValue != null) {
+                                groupNestedComponent.setFloat_value(floatValue);
+                            }
+                            needSyncGroupNestedComponents.add(groupNestedComponent);
+                        }
+                        groupComponentEs.setComponent(needSyncGroupNestedComponents);
+                    }
+                    list.add(groupComponentEs);
+                }
+            }
+        }
+        return list;
     }
 
 

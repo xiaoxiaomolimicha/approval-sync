@@ -166,8 +166,8 @@ public class ComponentUtils {
                     return null;
             }
         } catch (Exception e) {
-            logger.error("errorDate:{}", value);
-            logger.error(e.getMessage(), e);
+            logger.warn("errorDate:{}", value);
+            logger.warn(e.getMessage());
             return null;
         }
     }

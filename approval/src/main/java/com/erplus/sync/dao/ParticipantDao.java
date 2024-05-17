@@ -9,6 +9,8 @@ import java.util.Map;
 
 public interface ParticipantDao {
 
-
+    List<ParticipantEsEntity> selectParticipantByRequestId(Integer requestId) throws SQLException;
     Map<Integer, List<ParticipantEsEntity>> selectOneCompanyAllParticipant(Integer companyId, String createTime) throws SQLException;
+
+    Map<Integer, List<ParticipantEsEntity>> selectParticipantByRequestIds(String requestIds) throws SQLException;
 }

@@ -11,10 +11,10 @@ public class MysqlConnectionUtils {
     public static final int MYSQL_LOCAL_PORT = 3307; // 本地监听的端口
     private static volatile Connection connection;
 
-    public static Connection getMysqlConnection() throws Throwable{
-        if (connection == null) {
+    public static Connection getMysqlConnection() throws Throwable {
+        if (connection == null || connection.isClosed()) {
             synchronized (MysqlConnectionUtils.class) {
-                if (connection == null) {
+                if (connection == null || connection.isClosed()) {
                     DatabaseSingleton databaseSingleton = DatabaseSingleton.getDatabaseSingleton();
                     // 创建端口转发通道
                     ForwardPortUtils.forwardMysqlPort();
@@ -26,7 +26,7 @@ public class MysqlConnectionUtils {
         return connection;
     }
 
-    public static void closeConnection(){
+    public static void closeConnection() {
       try {
           if (connection != null) {
               connection.close();
